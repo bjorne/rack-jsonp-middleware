@@ -1,4 +1,3 @@
-
 require 'pathname'
 
 module Rack
@@ -11,15 +10,10 @@ module Rack
 
     def call(env)
       request = Rack::Request.new(env)
-      requesting_jsonp = Pathname(request.env['PATH_INFO']).extname =~ /^\.jsonp$/i
       callback = request.params['callback']
+      requesting_jsonp = !!callback
 
       return [400,{},[]] if requesting_jsonp && !self.valid_callback?(callback)
-
-      if requesting_jsonp
-        env['PATH_INFO'] = env['PATH_INFO'].sub(/\.jsonp/i, '.json')
-        env['REQUEST_URI'] = env['PATH_INFO']
-      end
 
       status, headers, body = @app.call(env)
 
@@ -35,7 +29,7 @@ module Rack
     end
 
   protected
-    
+
     # Do not allow arbitrary Javascript in the callback.
     #
     # @return [Regexp]

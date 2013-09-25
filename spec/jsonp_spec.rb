@@ -22,7 +22,7 @@ describe Rack::JSONP do
   describe 'when a valid jsonp request is made' do
 
     before :each do
-      @request = Rack::MockRequest.env_for("/action.jsonp?callback=#{@callback}")
+      @request = Rack::MockRequest.env_for("/action?callback=#{@callback}")
       @jsonp_response = Rack::JSONP.new(@app).call(@request)
       @jsonp_response_status, @jsonp_response_headers, @jsonp_response_body = @jsonp_response
     end
@@ -50,7 +50,7 @@ describe Rack::JSONP do
     before :each do
       @response_headers['Content-Type'] = 'application/json; charset=utf-8'
       @response_body = ['{"key":"√alue"}']
-      @request = Rack::MockRequest.env_for("/action.jsonp?callback=#{@callback}")
+      @request = Rack::MockRequest.env_for("/action?callback=#{@callback}")
       @jsonp_response = Rack::JSONP.new(@app).call(@request)
       @jsonp_response_status, @jsonp_response_headers, @jsonp_response_body = @jsonp_response
     end
@@ -73,28 +73,6 @@ describe Rack::JSONP do
 
   end
 
-
-  describe 'when a jsonp request is made wihtout a callback parameter present' do
-
-    before :each do
-      @request = Rack::MockRequest.env_for('/action.jsonp')
-      @jsonp_response = Rack::JSONP.new(@app).call(@request)
-      @jsonp_response_status, @jsonp_response_headers, @jsonp_response_body = @jsonp_response
-    end
-
-    it 'should set the response status to 400' do
-      @jsonp_response_status.should == 400
-    end
-
-    it 'should return an empty body' do
-      @jsonp_response_body.should == []
-    end
-
-    it 'should return empty headers' do
-      @jsonp_response_headers.should == {}
-    end
-
-  end
 
   describe 'when a jsonp request is made with an invalid callback' do
 
@@ -121,7 +99,7 @@ describe Rack::JSONP do
   describe 'when a non jsonp request is made' do
 
     before :each do
-      @request = Rack::MockRequest.env_for('/action.json')
+      @request = Rack::MockRequest.env_for('/action')
       @jsonp_response = Rack::JSONP.new(@app).call(@request)
       @jsonp_response_status, @jsonp_response_headers, @jsonp_response_body = @jsonp_response
     end
@@ -150,7 +128,7 @@ describe Rack::JSONP do
       }
       @response_body = ['']
 
-      @request = Rack::MockRequest.env_for("/action.jsonp?callback=#{@callback}")
+      @request = Rack::MockRequest.env_for("/action?callback=#{@callback}")
       @jsonp_response = Rack::JSONP.new(@app).call(@request)
       @jsonp_response_status, @jsonp_response_headers, @jsonp_response_body = @jsonp_response
     end
